@@ -1,9 +1,8 @@
 
-import ticketer.app.handlers as handlers
+import tickets.app.handlers as handlers
 import tornado.web
 
-
-TICKET_REGEX = "[A-Z0-9]+"
+from tickets.app.ticket_gen import TICKET_REGEX
 
 
 def make_app():
@@ -11,7 +10,8 @@ def make_app():
         [
             (r"/ping", handlers.PingHandler),
             (r"/pong", handlers.PongHandler),
-            (r"/ticket/({regex})".format(regex=TICKET_REGEX), handlers.TicketHandler),
+            (r"/ticket", handlers.TicketHandler),
+            (r"/ticket/({regex})".format(regex=TICKET_REGEX), handlers.TicketIdHandler),
             (r"/version", handlers.VersionHandler),
         ],
         default_handler_class=handlers.NotFoundHandler

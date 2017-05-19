@@ -1,6 +1,7 @@
 
-import ticketer
-import ticketer.app.cache as cache
+import tickets
+import tickets.app.cache as cache
+import tickets.app.ticket_gen as ticket_gen
 import time
 import tornado.web
 
@@ -18,9 +19,31 @@ class BaseHandler(tornado.web.RequestHandler):
         })
 
 
+class BaseTicketHandler(BaseHandler):
+    DEFAULT_EXPIRATION = 90
+
+    @property
+    def client(self):
+        if not hasattr(self, '_client') or self._client is None:
+            self._client = get_client()
+        return self._client
+
+    def _generate_ticket(self, ticket_id, expiration, payload):
+        """Set ticket in cache."""
+        # TODO: detect and handle conflicts.
+        self.client.setex(ticket_id, expiration, payload)
+
+    def _get_ticket(self, ticket_id):
+        """Return payload from cache."""
+        return self.client.get(ticket_id)
+
+
 class NotFoundHandler(BaseHandler):
     def get(self, *args, **kwargs):
-        raise tornado.web.HTTPError(status_code=404, reason="Invalid resource path.")
+        raise tornado.web.HTTPError(
+            status_code=404,
+            reason="Invalid resource path."
+        )
 
 
 class PingHandler(BaseHandler):
@@ -33,7 +56,10 @@ class PongHandler(BaseHandler):
     ERROR = "ERROR"
 
     def _get_response(self, method, *args, **kwargs):
-        """Executes method(*args, **kwargs) and returns dictionary with response information."""
+        """
+        Executes method(*args, **kwargs) and returns dictionary with response
+        information.
+        """
         start_time = time.time()
         resp = {}
         try:
@@ -60,15 +86,27 @@ class PongHandler(BaseHandler):
         self.write(resp)
 
 
-class TicketHandler(BaseHandler):
+class TicketHandler(BaseTicketHandler):
+    def post(self):
+        # TODO: support payload and expiration params.
+        ticket_id = ticket_gen.get()
+        self._generate_ticket(ticket_id, self.DEFAULT_EXPIRATION, 1)
+        self.write({'ticket_id': ticket_id})
+
+
+class TicketIdHandler(BaseHandler):
     def get(self, ticket_id):
         # Example/Test 400 response.
         if ticket_id == "RESERVED":
-            raise tornado.web.HTTPError(status_code=400, reason="Reserved Key.")
+            raise tornado.web.HTTPError(
+                status_code=400,
+                reason="Reserved Key."
+        )
 
-        self.write({'ticket_id': ticket_id})
+        payload = self._get_ticket(ticket_id)
+        self.write({'payload': payload, 'ticket_id': ticket_id})
 
 
 class VersionHandler(BaseHandler):
     def get(self):
-        self.write({'version': ticketer.__version__})
+        self.write({'version': tickets.__version__})

@@ -1,6 +1,6 @@
 
 import redis
-import ticketer.config
+import tickets.config
 
 
 _redis_client = None

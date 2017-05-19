@@ -15,13 +15,13 @@ COPY . /tmp/
 
 
 # Add source
-RUN mkdir -p /ticketer-dist/ticketer
-ADD . /ticketer-dist/ticketer
-RUN mv /ticketer-dist/ticketer/setup.py /ticketer-dist/
+RUN mkdir -p /tickets-dist/tickets
+ADD . /tickets-dist/tickets
+RUN mv /tickets-dist/tickets/setup.py /tickets-dist/
 
 
 # Install source -- basic setup.py
-RUN cd /ticketer-dist &&\
+RUN cd /tickets-dist &&\
     python setup.py build &&\
     python setup.py install
 

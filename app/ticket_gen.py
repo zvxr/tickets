@@ -11,4 +11,4 @@ DEFAULT_LEN = 8    # 2.8 trillion entries
 def get(length=DEFAULT_LEN):
     """Randomly generate and return a ticket."""
     # TODO: better generation technique.
-    return "".join(random.choices(TICKET_VALUES, k=length))
+    return "".join((random.choice(TICKET_VALUES) for value in range(length)))

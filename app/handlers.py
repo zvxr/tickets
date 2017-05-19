@@ -20,12 +20,12 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class BaseTicketHandler(BaseHandler):
-    DEFAULT_EXPIRATION = 90
+    DEFAULT_EXPIRATION = 60000  # 60 seconds.
 
     @property
     def client(self):
         if not hasattr(self, '_client') or self._client is None:
-            self._client = get_client()
+            self._client = cache.get_client()
         return self._client
 
     def _generate_ticket(self, ticket_id, expiration, payload):
@@ -94,7 +94,7 @@ class TicketHandler(BaseTicketHandler):
         self.write({'ticket_id': ticket_id})
 
 
-class TicketIdHandler(BaseHandler):
+class TicketIdHandler(BaseTicketHandler):
     def get(self, ticket_id):
         # Example/Test 400 response.
         if ticket_id == "RESERVED":

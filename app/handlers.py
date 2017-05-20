@@ -28,6 +28,13 @@ class BaseTicketHandler(BaseHandler):
             self._client = cache.get_client()
         return self._client
 
+    def _delete_ticket(self, ticket_id):
+        """
+        Expire a ticket by ID.
+        This will silently succeed if ticket ID did not exist.
+        """
+        self.client.expire(ticket_id)
+
     def _generate_ticket(self, ticket_id, expiration, payload):
         """Set ticket in cache."""
         # TODO: detect and handle conflicts.
@@ -95,6 +102,10 @@ class TicketHandler(BaseTicketHandler):
 
 
 class TicketIdHandler(BaseTicketHandler):
+    def delete(self, ticket_id):
+        self._delete_ticket(ticket_id)
+        self.write({'message': "success"})
+
     def get(self, ticket_id):
         # Example/Test 400 response.
         if ticket_id == "RESERVED":

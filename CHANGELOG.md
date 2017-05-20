@@ -6,7 +6,7 @@ For core tickets service.
 - [ ] Add unit testing.
 - [ ] Add documentation.
 - [ ] Add route `PUT /ticket/:id?payload=&ttl=`.
-- [ ] Add route `DELETE /ticket/:id`.
+- [x] Add route `DELETE /ticket/:id`.
 - [ ] Generate build script.
 - [ ] Add webhooks.
 

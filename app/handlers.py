@@ -40,9 +40,24 @@ class BaseTicketHandler(BaseHandler):
         # TODO: detect and handle conflicts.
         self.client.setex(ticket_id, expiration, payload)
 
-    def _get_ticket(self, ticket_id):
-        """Return payload from cache."""
-        return self.client.get(ticket_id)
+    def _get_ticket(self, ticket_id, expire):
+        """
+        Return payload from cache.
+        If expire is True, set to None atomically.
+        """
+        # TODO: best practices for atomically fetch/expire-- not just null.
+        if expire:
+            return self.client.getset(ticket_id, None)
+        else:
+            return self.client.get(ticket_id)
+
+    def _update_ticket(self, ticket_id, payload=None, ttl=None):
+        """Set ticket payload and/or TTL in cache."""
+        if payload:
+            self.client.set(ticket_id, payload)
+
+        if ttl:
+            self.client.expire(ticket_id, ttl)
 
 
 class NotFoundHandler(BaseHandler):
@@ -95,9 +110,10 @@ class PongHandler(BaseHandler):
 
 class TicketHandler(BaseTicketHandler):
     def post(self):
-        # TODO: support payload and expiration params.
+        payload = self.get_argument('payload', 1)
+        ttl = self.get_argument('ttl', self.DEFAULT_EXPIRATION)
         ticket_id = ticket_gen.get()
-        self._generate_ticket(ticket_id, self.DEFAULT_EXPIRATION, 1)
+        self._generate_ticket(ticket_id, ttl, payload)
         self.write({'ticket_id': ticket_id})
 
 
@@ -114,8 +130,27 @@ class TicketIdHandler(BaseTicketHandler):
                 reason="Reserved Key."
         )
 
-        payload = self._get_ticket(ticket_id)
+        expire = self.get_argument('expire', True)
+        payload = self._get_ticket(ticket_id, expire)
         self.write({'payload': payload, 'ticket_id': ticket_id})
+
+    def put(self, ticket_id):
+        payload = self.get_argument('payload', None)
+        ttl = self.get_argument('ttl', None)
+
+        if payload and ttl:
+            self._generate_ticket(ticket_id, ttl, payload)
+        elif payload:
+            self._update_ticket(ticket_id, payload=payload)
+        elif ttl:
+            self._update_ticket(ticket_id, ttl=ttl)
+        else:
+            raise tornado.web.HTTPError(
+                status_code=400,
+                reason="At least one argument required: 'payload', 'ttl'."
+            )
+
+        self.write({'message': "success"})
 
 
 class VersionHandler(BaseHandler):

@@ -44,7 +44,7 @@ class BaseTicketHandler(BaseHandler):
     def _generate_ticket(self, ticket_id, ttl, payload):
         """Set ticket in cache."""
         # TODO: detect and handle conflicts.
-        self.client.setex(ticket_id, ttl, payload)
+        self.client.setex(ticket_id, payload, ttl)
 
     def _get_ticket(self, ticket_id, expire):
         """

@@ -2,10 +2,10 @@
 For core tickets service.
 
 ## [Unreleased]
-- [ ] Handle arguments for existing routes.
+- [x] Handle arguments for existing routes.
 - [ ] Add unit testing.
 - [ ] Add documentation.
-- [ ] Add route `PUT /ticket/:id?payload=&ttl=`.
+- [x] Add route `PUT /ticket/:id?payload=&ttl=`.
 - [x] Add route `DELETE /ticket/:id`.
 - [ ] Generate build script.
 - [ ] Add webhooks.

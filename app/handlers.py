@@ -7,6 +7,12 @@ import tornado.web
 
 
 class BaseHandler(tornado.web.RequestHandler):
+    def get_int_value(self, arg_name, default=None):
+        value = self.get_argument(arg_name, default=default)
+        if value:
+            return int(value)
+        return value
+
     def prepare(self):
         self.set_header('Content-Type', "application/json")
 
@@ -35,10 +41,10 @@ class BaseTicketHandler(BaseHandler):
         """
         self.client.expire(ticket_id)
 
-    def _generate_ticket(self, ticket_id, expiration, payload):
+    def _generate_ticket(self, ticket_id, ttl, payload):
         """Set ticket in cache."""
         # TODO: detect and handle conflicts.
-        self.client.setex(ticket_id, expiration, payload)
+        self.client.setex(ticket_id, ttl, payload)
 
     def _get_ticket(self, ticket_id, expire):
         """
@@ -111,7 +117,7 @@ class PongHandler(BaseHandler):
 class TicketHandler(BaseTicketHandler):
     def post(self):
         payload = self.get_argument('payload', 1)
-        ttl = self.get_argument('ttl', self.DEFAULT_EXPIRATION)
+        ttl = self.get_int_value('ttl', self.DEFAULT_EXPIRATION)
         ticket_id = ticket_gen.get()
         self._generate_ticket(ticket_id, ttl, payload)
         self.write({'ticket_id': ticket_id})
@@ -136,7 +142,7 @@ class TicketIdHandler(BaseTicketHandler):
 
     def put(self, ticket_id):
         payload = self.get_argument('payload', None)
-        ttl = self.get_argument('ttl', None)
+        ttl = self.get_int_value('ttl', None)
 
         if payload and ttl:
             self._generate_ticket(ticket_id, ttl, payload)

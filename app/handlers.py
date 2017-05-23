@@ -75,11 +75,75 @@ class NotFoundHandler(BaseHandler):
 
 
 class PingHandler(BaseHandler):
+    """
+    .. http:get:: /ping
+
+       Route for basic health monitoring.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          GET /ping HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+          {
+              "message": "PONG"
+          }
+
+        :statuscode 200: Success.
+    """
     def get(self):
         self.write({'message': "PONG"})
 
 
 class PongHandler(BaseHandler):
+    """
+    .. http:get:: /pong
+
+       Route for in-depth health monitoring. This will check connections to all
+       external services this one use.
+
+       The `response` attribute may have one of three values.
+           * `OK` indicates a healthy response.
+           * `ERROR` indicates a connection or execution error.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          GET /pong HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+            {
+                "message": "OK",
+                "services": {
+                    "redis": {
+                        "response": "OK",
+                        "message": "PONG"
+                        "response_time": 1
+                    }
+                }
+            }
+
+        :statuscode 200: Success.
+        :statuscode 500: Internal server error. At least one service failed to
+                        return a successful response.
+    """
     OK = "OK"
     ERROR = "ERROR"
 
@@ -115,6 +179,36 @@ class PongHandler(BaseHandler):
 
 
 class TicketHandler(BaseTicketHandler):
+    """
+    .. http:post:: /ticket
+
+       Route for generating a new ticket.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          POST /ticket HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+            {
+                "ticket_id": "0D3KEBF3"
+            }
+
+        :param payload: String. Data to store as part of the ticket. Default
+                        value '1'.
+        :param ttl: Integer. The number of milliseconds for ticket to exist
+                    before expiring. Default is 60 seconds (value of 60000).
+        :statuscode 200: Success.
+        :statuscode 400: Non-integer value passed for `ttl`. **TODO: NO HOOKS**
+    """
     def post(self):
         payload = self.get_argument('payload', 1)
         ttl = self.get_int_value('ttl', self.DEFAULT_EXPIRATION)
@@ -125,10 +219,64 @@ class TicketHandler(BaseTicketHandler):
 
 class TicketIdHandler(BaseTicketHandler):
     def delete(self, ticket_id):
+    """
+    .. http:delete:: /ticket/(int:ticket_id)
+
+       Route for Manually expiring a ticket by ID.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          DELETE /ticket/ABCDEF123 HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+            {
+                "message": "success"
+            }
+
+        :statuscode 200: Success.
+    """
         self._delete_ticket(ticket_id)
         self.write({'message': "success"})
 
     def get(self, ticket_id):
+    """
+    .. http:get:: /ticket/(int:ticket_id)
+
+       Route for getting the data associated with a ticket.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          GET /ticket/ABCDEF123 HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+            {
+                "payload": "1",
+                "ticket_id": "ABCDEF123"
+            }
+
+        :param expire: Boolean. Indicates if fetching the ticket should be a
+                       destructive action. Default to False.
+        :statuscode 200: Success.
+        :statuscode 400: Ticket does not exist. **TODO: NO HOOKS**
+    """
         # Example/Test 400 response.
         if ticket_id == "RESERVED":
             raise tornado.web.HTTPError(
@@ -136,11 +284,43 @@ class TicketIdHandler(BaseTicketHandler):
                 reason="Reserved Key."
         )
 
-        expire = self.get_argument('expire', True)
+        expire = self.get_argument('expire', False)
         payload = self._get_ticket(ticket_id, expire)
         self.write({'payload': payload, 'ticket_id': ticket_id})
 
     def put(self, ticket_id):
+    """
+    .. http:put:: /ticket/(int:ticket_id)
+
+       Route for updating the data associated with a ticket and/or the TTL
+       period for a ticket.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          PUT /ticket/ABCDEF123?payload=helloworld HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+            {
+                "message": "success"
+            }
+
+        :param payload: String. Data to store as part of the ticket. Default
+                        value '1'.
+        :param ttl: Integer. The number of milliseconds for ticket to exist
+                    before expiring. Default is 60 seconds (value of 60000).
+        :statuscode 200: Success.
+        :statuscode 400: Non-integer value passed for `ttl`. **TODO: NO HOOKS**
+        :statuscode 400: No `payload` or `ttl` parameter present in request.
+    """
         payload = self.get_argument('payload', None)
         ttl = self.get_int_value('ttl', None)
 
@@ -161,4 +341,29 @@ class TicketIdHandler(BaseTicketHandler):
 
 class VersionHandler(BaseHandler):
     def get(self):
+    """
+    .. http:get:: /ping
+
+       Route for validating version of running application.
+
+       **Example request**:
+
+       .. sourcecode:: http
+
+          GET /ping HTTP/1.1
+
+       **Example response**:
+
+       .. sourcecode:: http
+
+          HTTP/1.1 200 OK
+          Vary: Accept
+          Content-Type: text/javascript
+
+          {
+              "version": "0.1.0"
+          }
+
+        :statuscode 200: Success.
+    """
         self.write({'version': tickets.__version__})

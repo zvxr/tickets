@@ -7,8 +7,6 @@ from unittest.mock import Mock, patch
 class TestCacheMethods(unittest.TestCase):
     def setUp(self):
         # Reset cache client. Mock out the pool.
-        global cache
-        reload(cache)
         cache._redis_client = None
         self.redis_client_pool = Mock()
         cache._redis_client_pool = self.redis_client_pool
@@ -17,7 +15,7 @@ class TestCacheMethods(unittest.TestCase):
     def test_get_client(self, redis_mock):
         client = cache.get_client()
 
-        self.assertEqual(client, redis_mock.return_value)
+        assert client == redis_mock.return_value
         redis_mock.assert_called_with(connection_pool=self.redis_client_pool)
 
     @patch('tickets.app.cache.get_client')
@@ -26,6 +24,6 @@ class TestCacheMethods(unittest.TestCase):
         get_client_mock.return_value = client_mock
         resp = cache.ping()
 
-        self.assertEqual(resp, client_mock.ping.return_value)
+        assert resp == client_mock.ping.return_value
         get_client_mock.assert_called_with()
         client_mock.ping.assert_called_with()

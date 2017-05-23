@@ -15,7 +15,7 @@ class TestCacheMethods(unittest.TestCase):
     def test_get_client(self, redis_mock):
         client = cache.get_client()
 
-        assert client == redis_mock.return_value
+        self.assertEqual(client, redis_mock.return_value)
         redis_mock.assert_called_with(connection_pool=self.redis_client_pool)
 
     @patch('tickets.app.cache.get_client')
@@ -26,3 +26,7 @@ class TestCacheMethods(unittest.TestCase):
 
         get_client_mock.assert_called_with()
         client_mock.ping.assert_called_with()
+
+
+if __name__ == '__main__':
+    unittest.main()

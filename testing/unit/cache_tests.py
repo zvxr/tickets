@@ -24,6 +24,5 @@ class TestCacheMethods(unittest.TestCase):
         get_client_mock.return_value = client_mock
         resp = cache.ping()
 
-        assert resp == client_mock.ping.return_value
         get_client_mock.assert_called_with()
         client_mock.ping.assert_called_with()

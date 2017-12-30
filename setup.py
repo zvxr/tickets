@@ -1,12 +1,10 @@
 
-import tickets
-
 from setuptools import setup, find_packages
 
 
 setup(
     name="tickets",
-    version=tickets.__version__,
+    version='0.2.1',
     author="Mike McConnell",
     author_email="djrahl84@gmail.com",
     description=("HTTP service. "

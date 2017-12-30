@@ -1,7 +1,7 @@
 
-import tickets
-import tickets.app.cache as cache
-import tickets.app.ticket_gen as ticket_gen
+import app
+import app.cache as cache
+import app.ticket_gen as ticket_gen
 import time
 import tornado.web
 
@@ -366,4 +366,4 @@ class VersionHandler(BaseHandler):
 
         :statuscode 200: Success.
     """
-        self.write({'version': tickets.__version__})
+        self.write({'version': app.__version__})

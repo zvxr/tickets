@@ -1,8 +1,8 @@
 
-import tickets.app.handlers as handlers
+import app.handlers as handlers
 import tornado.web
 
-from tickets.app.ticket_gen import TICKET_REGEX
+from app.ticket_gen import TICKET_REGEX
 
 
 def make_app():

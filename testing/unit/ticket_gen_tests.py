@@ -1,5 +1,5 @@
 
-import tickets.app.ticket_gen as ticket_gen
+import app.ticket_gen as ticket_gen
 import unittest
 from unittest.mock import Mock, patch
 

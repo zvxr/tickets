@@ -1,5 +1,5 @@
 
-import tickets.app.cache as cache
+import app.cache as cache
 import unittest
 from unittest.mock import Mock, patch
 
@@ -18,7 +18,7 @@ class TestCacheMethods(unittest.TestCase):
         self.assertEqual(client, redis_mock.return_value)
         redis_mock.assert_called_with(connection_pool=self.redis_client_pool)
 
-    @patch('tickets.app.cache.get_client')
+    @patch('app.cache.get_client')
     def test_ping(self, get_client_mock):
         client_mock = Mock()
         get_client_mock.return_value = client_mock

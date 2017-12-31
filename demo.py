@@ -1,8 +1,8 @@
 
-import tickets.config
+import config
 import tornado.ioloop
 
-from tickets.app.main import make_app
+from app.main import make_app
 
 
 def run():

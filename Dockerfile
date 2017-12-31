@@ -1,12 +1,15 @@
 #
 # Image for project.
 #
-FROM python:3.5
+FROM alpine:3.6
 
 MAINTAINER Mike McConnell
 
 EXPOSE 8080
 
+
+# Run update.
+RUN apk add --update python py-pip
 
 # Set-up installation
 COPY requirements.txt /tmp/

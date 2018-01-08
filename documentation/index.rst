@@ -8,8 +8,9 @@ Welcome to Tickets's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
+.. autotornado:: app.main:app
+   :endpoints:
 
 
 Indices and tables

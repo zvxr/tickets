@@ -20,7 +20,7 @@ ADD . /tickets-dist/tickets
 
 
 # Install source -- basic setup.py
-RUN cd /tickets-dist/tickets
+RUN cd /tickets-dist/tickets &&\
     python setup.py build &&\
     python setup.py install
 

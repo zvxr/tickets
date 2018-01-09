@@ -1,3 +1,8 @@
 *.pyc
+
+build
+dist
+tickets.egg-info
+
 venv*
 documentation/_build*

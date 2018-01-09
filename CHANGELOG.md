@@ -6,6 +6,7 @@
 - Added unit testing.
 - Added Docker and Kubernetes files.
 - Added build script.
+- Added Travis CI support.
 
 ## [0.1.0] - 2017-05-19
 - Added core Tornado application.

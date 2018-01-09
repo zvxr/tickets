@@ -1,15 +1,12 @@
 #
 # Image for project.
 #
-FROM alpine:3.6
+FROM python:3.6
 
 MAINTAINER Mike McConnell
 
 EXPOSE 8080
 
-
-# Run update.
-RUN apk add --update python py-pip
 
 # Set-up installation
 COPY requirements.txt /tmp/
@@ -20,14 +17,13 @@ COPY . /tmp/
 # Add source
 RUN mkdir -p /tickets-dist/tickets
 ADD . /tickets-dist/tickets
-RUN mv /tickets-dist/tickets/setup.py /tickets-dist/
 
 
 # Install source -- basic setup.py
-RUN cd /tickets-dist &&\
+RUN cd /tickets-dist/tickets
     python setup.py build &&\
     python setup.py install
 
 
 # Default command
-CMD ["python"]
+CMD ["python", "tickets-dist/tickets/app/main.py"]

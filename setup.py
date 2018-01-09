@@ -7,8 +7,8 @@ setup(
     version='0.2.1',
     author="Mike McConnell",
     author_email="djrahl84@gmail.com",
-    description=("HTTP service. "
-        "Facilitates issuing and redeeming unique keys."),
+    description=("A lightweight HTTP service that facilitates issuing "
+        "and redeeming tickets."),
     url="https://github.com/zvxr/tickets",
     packages=find_packages(),
 )

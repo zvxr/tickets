@@ -1,4 +1,3 @@
-
 import redis
 import config
 

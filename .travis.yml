@@ -1,0 +1,12 @@
+language: python
+python:
+    - 3.6
+env:
+    global:
+        - PYTHONPATH="$TRAVIS_BUILD_DIR/_pypath"
+        - LOG_PATH="$TRAVIS_BUILD_DIR/log"
+install:
+    - pip install -r requirements.txt
+    - cd $TRAVIS_BUILD_DIR
+script:
+    - python -m unittest discover -p '*_tests.py' testing/unit

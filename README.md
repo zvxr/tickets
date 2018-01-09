@@ -34,7 +34,8 @@ make -C documentation/ html
 ```
 
 ## Testing
-Testing is performed with unittest and Mock.
+Testing is performed with unittest and Mock. Tests are automatically run on PR
+and weekly against `master` using [Travis CI](https://travis-ci.org/).
 
 ```
 python -m unittest discover -p '*_tests.py' testing/unit

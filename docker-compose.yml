@@ -1,0 +1,9 @@
+web:
+    image: tickets
+    ports:
+        - "3000:8080"
+    links:
+        - redis
+redis:
+    image: redis:latest
+    container_name: redis

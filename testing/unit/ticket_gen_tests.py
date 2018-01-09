@@ -1,4 +1,3 @@
-
 import app.ticket_gen as ticket_gen
 import unittest
 from unittest.mock import Mock, patch

@@ -1,6 +1,5 @@
-
 import app.handlers as handlers
-import config
+import app.config as config
 import tornado.web
 
 from app.ticket_gen import TICKET_REGEX
